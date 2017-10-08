@@ -1,0 +1,6 @@
+digraph tasks {
+	hothdaq_result->copy[label="rsync"];
+	copy->fts_inbox[label="tar"];
+	copy->bnlbox[label="ruby script"];
+	fts_inbox->SAM[label="fts"];
+}

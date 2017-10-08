@@ -1,0 +1,6 @@
+*.pyc
+*~
+venv*
+*.egg-info
+*.sqlite
+*.sqlite3
