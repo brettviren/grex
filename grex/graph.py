@@ -2,8 +2,33 @@
 '''
 Task graph.
 '''
-import commands
+import grex.commands
+import grex.io
 
+def make_node(func=None, inputs=(), params=None, value=None, **kwds):
+    ret = list()
+    if value:
+        return value
+
+    if func:
+        func = getattr(grex.commands, func)
+        ret.append(func)
+        ret.append([tuple(inputs), list(inputs)])
+        params = params or dict();
+        params.update(**kwds)
+        ret.append(params)
+        return tuple(ret)
+    return 
+    
+
+def loadf(graphfile, store=None):
+    graw = grex.io.loadf(graphfile)
+    g = dict()
+    for name, dat in graw.items():
+        if store:
+            dat.setdefault('store', store)
+        g[name] = make_node(**dat)
+    return g
 
 def make_task_graph(daqrun, **cfg):
     g = dict(
@@ -20,3 +45,9 @@ def execute(g):
     Execute a graph
     '''
     print (g)
+
+
+from dask.multiprocessing import get
+
+
+    

@@ -44,6 +44,7 @@ class DaqRun(Base):
     config = Column(String)
     timestamp = Column(String)
     datadir = Column(String)
+    discovered = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     stages = relationship("Stages", back_populates="daqrun")
 

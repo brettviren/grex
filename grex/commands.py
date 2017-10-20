@@ -3,7 +3,44 @@
 Some GrEx command batteries included.
 '''
 import os
+import json
 import subprocess
+
+import grex.io
+import grex.store
+
+def reformat(inputs, kwds):
+    for k,v in zip(*inputs):
+        kwds[k] = v;
+    return kwds
+
+def echo(inputs, params):
+    params = reformat(inputs, params)
+
+    try:
+        store = params.pop("store")
+    except KeyError:
+        pass
+    else:
+        ses = grex.store.session(store)
+        got = ses.query(grex.store.Stages).filter_by(command="echo", params=params).all()
+        if len(got) == 1:
+            return got[0].result
+        if len(got) > 1:
+            raise ValueError("ECHO: got %d results: %s" % (len(got), repr(got)))
+        print ("PARAMS:", params)
+
+
+    string = grex.io.render_string(params["message"], **params)
+    print("ECHO:",string)
+    return string
+    
+
+
+
+
+
+
 
 def remote(cfg):
     userat = ""

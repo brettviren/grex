@@ -61,7 +61,7 @@ def seed(ctx, save, host):
               help="A command graph in the form of a Jsonnet file")
 @click.argument("seeds", nargs=-1) # list of seed ID numbers of ident strings
 @click.pass_context
-def run(ctx,graph,seeds):
+def run(ctx, graph, seeds):
     '''
     Run a command graph against seeds.
     '''
@@ -69,27 +69,30 @@ def run(ctx,graph,seeds):
         click.echo("no seeds given")
         return
     ses = ctx.obj['session']
-    seed_obj = list()
-    for sid in seeds:
-        try:
-            sid = int(sid)
-            obj = ses.query(grex.store.DaqRun).filter_by(id=sid).all()
-        except ValueError:
-            h,cat,cfg,ts = sid.split('-')
-            obj = ses.query(grex.store.DaqRun).filter_by(host=h,category=cat,config=cfg,timestamp=ts).all()
-        if not obj:
-            click.echo("no such seed: %s" % repr(sid))
-            continue
-        if len(obj) > 1:
-            click.echo("got multiple seeds for %s, using first" % repr(sid))
-        seed_obj.append(obj[0])
-
-    for seed in seed_obj:
+    seed_objs = grex.seed.by_id(ses, seeds)
+    
+    for seed in seed_objs:
         print (seed.asdict())
         #one = grex.config.loads(gtext, **seed.asdict())
         #grex.graph.execute(one)
     
             
+@cli.command("graph")
+@click.argument("graphfile")
+@click.pass_context
+def graph(ctx, graphfile):
+    import grex.graph
+    g = grex.graph.loadf(graphfile, store=ctx.obj['store'])
+    print ("GRAPH:",g)
+    g["seed"] = dict(ident="the-seed") # testing
+    ret = grex.graph.get(g, 'final')
+    if ret:
+        print("FINAL:", repr(ret))
+
+
+    
+
+
 
 
 def main():

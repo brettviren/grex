@@ -4,3 +4,6 @@ venv*
 *.egg-info
 *.sqlite
 *.sqlite3
+*.db
+*.sqlite
+*.sqlite3
